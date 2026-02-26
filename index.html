@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management Portfolio | Strategy & Execution</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --surface: #f8fafc;
+            --border: #e2e8f0;
+            --primary: #0f172a; /* Deep Slate */
+            --accent: #2563eb;  /* Professional Blue */
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --success: #10b981;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --border: #334155;
+            --primary: #f8fafc;
+            --accent: #3b82f6;
+            --text-main: #f1f5f9;
+            --text-sub: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.5;
+            transition: background-color 0.3s, color 0.3s;
+            overflow-x: hidden;
+        }
+
+        /* --- New Animations --- */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes subtlePulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        header.animate-in {
+            animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 6rem 2rem;
+        }
+
+        header {
+            margin-bottom: 5rem;
+            max-width: 800px;
+        }
+
+        .category-tag {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .lead {
+            font-size: 1.25rem;
+            color: var(--text-sub);
+            font-weight: 400;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .icon-wrapper {
+            width: 48px;
+            height: 48px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .capability-tag {
+            padding: 0.35rem 0.85rem;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            background: rgba(37, 99, 235, 0.08);
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid rgba(37, 99, 235, 0.1);
+        }
+
+        .product-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--primary);
+        }
+
+        .product-metadata {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            margin-bottom: 1rem;
+            font-weight: 500;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .product-metadata span:not(:last-child)::after {
+            content: "•";
+            margin-left: 0.5rem;
+        }
+
+        /* --- Modal System --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--bg);
+            width: 95%;
+            max-width: 700px;
+            border-radius: 24px;
+            padding: 3.5rem;
+            position: relative;
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid var(--border);
+            box-shadow: 0 40px 80px -20px rgba(15, 23, 42, 0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            width: 40px;
+            height: 40px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-sub);
+            transition: all 0.2s;
+            z-index: 10;
+        }
+
+        .close-modal:hover {
+            background: var(--primary);
+            color: var(--bg);
+            transform: rotate(90deg);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .modal-header-text h2 {
+            font-family: 'Outfit';
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .modal-section h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .focus-pill-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .focus-pill {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .modal-comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .comparison-item {
+            padding: 1.5rem;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .comparison-item.legacy {
+            background: rgba(239, 68, 68, 0.03);
+            border: 1px solid rgba(239, 68, 68, 0.1);
+        }
+
+        .comparison-item.advantage {
+            background: rgba(16, 185, 129, 0.03);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+        }
+
+        .item-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 0.75rem;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        footer {
+            margin-top: 6rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-sub);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 640px) {
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 4rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <div class="close-modal" id="closeModal"><i data-lucide="x"></i></div>
+            <div id="modalBody">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+        <i data-lucide="moon" id="theme-icon"></i>
+    </button>
+
+    <div class="container">
+        <header class="animate-in">
+            <span class="category-tag">Engineering Excellence</span>
+            <h1>Product Strategy & Execution</h1>
+            <p class="lead">Delivering impact through modular architecture and high-performance system design.</p>
+        </header>
+
+        <div class="portfolio-grid">
+            <!-- LifeFlow -->
+            <div class="product-card reveal">
+                <div class="icon-header">
+                    <div class="icon-wrapper"><i data-lucide="activity"></i></div>
+                    <div class="capability-tag">Predictive Load Analytics</div>
+                </div>
+                <h2 class="product-title">LifeFlow</h2>
+                <div class="product-metadata">
+                    <span>Target: Technical Professionals</span>
+                </div>
+                <p class="teaser-description">
+                    A unified cognitive workspace designed to harmonize deep-work session management with long-term burnout tracking. It leverages habit-loop analysis and real-time reflections to optimize professional output levels.
+                </p>
+                <div class="card-footer">
+                    <span>Operational Flow</span>
+                    <i data-lucide="chevron-right"></i>
+                </div>
+            </div>
+
+            <!-- OpenClaw -->
+            <div class="product-card reveal">
+                <div class="icon-header">
+                    <div class="icon-wrapper"><i data-lucide="layers"></i></div>
+                    <div class="capability-tag">Real-Time Orchestration</div>
+                </div>
+                <h2 class="product-title">OpenClaw</h2>
+                <div class="product-metadata">
+                    <span>Target: Systems Integration</span>
+                </div>
+                <p class="teaser-description">
+                    A low-latency agentic control plane built on a scalable WebSocket architecture. It provides a standardized rpc interface to synchronize automated workflows across 10+ distributed communication nodes.
+                </p>
+                <div class="card-footer">
+                    <span>System Architecture</span>
+                    <i data-lucide="chevron-right"></i>
+                </div>
+            </div>
+
+            <!-- RoleEase -->
+            <div class="product-card reveal">
+                <div class="icon-header">
+                    <div class="icon-wrapper"><i data-lucide="target"></i></div>
+                    <div class="capability-tag">High-Signal Matching</div>
+                </div>
+                <h2 class="product-title">RoleEase</h2>
+                <div class="product-metadata">
+                    <span>Target: Elite Talent Discovery</span>
+                </div>
+                <p class="teaser-description">
+                    A high-precision discovery engine for specialized technical roles. It utilizes a proprietary scoring algorithm to aggregate and filter top-tier opportunities, significantly reducing listing noise through stack-alignment scoring.
+                </p>
+                <div class="card-footer">
+                    <span>Matching Logic</span>
+                    <i data-lucide="chevron-right"></i>
+                </div>
+            </div>
+
+            <!-- Agency Hub -->
+            <div class="product-card reveal">
+                <div class="icon-header">
+                    <div class="icon-wrapper"><i data-lucide="briefcase"></i></div>
+                    <div class="capability-tag">Multi-Tenant CRM</div>
+                </div>
+                <h2 class="product-title">Agency Hub</h2>
+                <div class="product-metadata">
+                    <span>Target: Client Operations</span>
+                </div>
+                <p class="teaser-description">
+                    An AI-driven booking infrastructure designed for enterprise-grade scalability. It manages complex intake workflows and automated scheduling using cost-aware model routing for multi-tenant environments.
+                </p>
+                <div class="card-footer">
+                    <span>Platform Model</span>
+                    <i data-lucide="chevron-right"></i>
+                </div>
+            </div>
+
+            <!-- Invenpilot -->
+            <div class="product-card reveal">
+                <div class="icon-header">
+                    <div class="icon-wrapper"><i data-lucide="box"></i></div>
+                    <div class="capability-tag">Predictive Logistics</div>
+                </div>
+                <h2 class="product-title">Invenpilot</h2>
+                <div class="product-metadata">
+                    <span>Target: Asset Synchronization</span>
+                </div>
+                <p class="teaser-description">
+                    A real-time logistics synchronization layer featuring predictive replenishment triggers. It automates inventory tracking to minimize stockout overhead while maintaining optimal capital allocation.
+                </p>
+                <div class="card-footer">
+                    <span>Synchronization Logic</span>
+                    <i data-lucide="chevron-right"></i>
+                </div>
+            </div>
+
+            <!-- ProChat -->
+            <div class="product-card reveal">
+                <div class="icon-header">
+                    <div class="icon-wrapper"><i data-lucide="shield"></i></div>
+                    <div class="capability-tag">Encrypted Audit Trails</div>
+                </div>
+                <h2 class="product-title">ProChat</h2>
+                <div class="product-metadata">
+                    <span>Target: Secure Coordination</span>
+                </div>
+                <p class="teaser-description">
+                    A high-concurrency communication conduit designed for executive operational security. It provides end-to-end encrypted messaging with granular audit trails and automated compliance-ready data lifecycles.
+                </p>
+                <div class="card-footer">
+                    <span>System Integrity</span>
+                    <i data-lucide="chevron-right"></i>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 Innovation Portfolio | Strategic Product Leadership</p>
+            <div style="display: flex; gap: 1.5rem;">
+                <span>Outcome Focused</span>
+                <span>Scaled Operations</span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const productData = {
+            'LifeFlow': {
+                icon: 'activity',
+                title: 'LifeFlow',
+                capability: 'Predictive Load Analytics',
+                pillars: ['Habit Loop Analysis', 'Cognitive Energy Tracking', 'Deep-Work Scheduling'],
+                legacy: 'Static productivity tools ignore human energy cycles, leading to high-performance burnout and diminishing returns.',
+                advantage: 'Synchronizes output rhythm with real-time neural load data to maintain peak flow without exhaustion.',
+                differentiation: 'Architecture built on the intersection of task-logic and physiological state-management.'
+            },
+            'OpenClaw': {
+                icon: 'layers',
+                title: 'OpenClaw',
+                capability: 'Real-Time Orchestration',
+                pillars: ['RPC Protocol Strategy', 'WebSocket Control Plane', 'Multi-Node Connectivity'],
+                legacy: 'AI automation is currently siloed by platform, requiring brittle custom bridges for every new integration.',
+                advantage: 'Universal rpc layer that treats all hardware and software nodes as a single, programmable ecosystem.',
+                differentiation: 'Engineered for near-zero latency execution across highly distributed edge-intelligence networks.'
+            },
+            'RoleEase': {
+                icon: 'target',
+                title: 'RoleEase',
+                capability: 'High-Signal Matching',
+                pillars: ['Stack-Alignment Scoring', 'Tier-1 Filtering', 'Discovery Engine'],
+                legacy: 'Legacy boards optimize for listing volume, forcing senior talent to filter through 90% irrelevant noise.',
+                advantage: 'Developer-centric ranking that prioritizes engineering signal and technical compatibility above all else.',
+                differentiation: 'Focuses strictly on the "high-signal" segment of the market where standard keyword matching fails.'
+            },
+            'Agency Hub': {
+                icon: 'briefcase',
+                title: 'Agency Hub',
+                capability: 'Multi-Tenant CRM',
+                pillars: ['Intelligent Routing', 'Autonomous Scheduling', 'Model Profitability'],
+                legacy: 'Traditional intake relies on manual entry, leading to missed opportunities and suboptimal resource allocation.',
+                advantage: 'Self-orchestrating intake layer that autonomously handles scheduling logic and service fulfillment.',
+                differentiation: 'Vertical-agnostic infrastructure designed to scale complex service-unit operations without admin bloat.'
+            },
+            'Invenpilot': {
+                icon: 'box',
+                title: 'Invenpilot',
+                capability: 'Predictive Logistics',
+                pillars: ['Real-Time Sync', 'Demand Forecasting', 'Procurement Triggers'],
+                legacy: 'Reactive tracking leads to inventory displacement and capital lock-up in non-performing stock assets.',
+                advantage: 'Predictive synchronization that anticipates supply-chain flux to maintain lean, high-turnover inventory.',
+                differentiation: 'Moves supply-chain logic from retrospective tracking to future-state predictive fulfillment.'
+            },
+            'ProChat': {
+                icon: 'shield',
+                title: 'ProChat',
+                capability: 'Encrypted Audit Trails',
+                pillars: ['E2E Encryption', 'Granular Audit Logs', 'Compliance Lifecycles'],
+                legacy: 'Standard collaboration channels create unacceptable security risks and compliance gaps for executive coordination.',
+                advantage: 'Hardware-agnostic secure conduit purpose-built for high-concurrency executive operational coordination.',
+                differentiation: 'Immutable operational environment where coordination clarity and data security are mathematically linked.'
+            }
+        };
+
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalBody = document.getElementById('modalBody');
+        const closeModal = document.getElementById('closeModal');
+
+        function openProductDetails(id) {
+            const data = productData[id];
+            if (!data) return;
+
+            modalBody.innerHTML = `
+                <div class="modal-header">
+                    <div class="icon-wrapper"><i data-lucide="${data.icon}"></i></div>
+                    <div class="modal-header-text">
+                        <h2>${data.title}</h2>
+                        <div class="capability-tag">${data.capability}</div>
+                    </div>
+                </div>
+                
+                <div class="modal-section">
+                    <h3>Strategic Positioning</h3>
+                    <p style="color: var(--text-main); line-height: 1.6; font-size: 1.1rem; font-weight: 500;">${data.differentiation}</p>
+                </div>
+
+                <div class="modal-section">
+                    <h3>Core Development Pillars</h3>
+                    <div class="focus-pill-container">
+                        ${data.pillars.map(p => `<span class="focus-pill">${p}</span>`).join('')}
+                    </div>
+                </div>
+
+                <div class="modal-comparison-grid">
+                    <div class="comparison-item legacy">
+                        <span class="item-label" style="color: #ef4444;">Industry Friction</span>
+                        <p>${data.legacy}</p>
+                    </div>
+                    <div class="comparison-item advantage">
+                        <span class="item-label" style="color: #10b981;">Architectural Solution</span>
+                        <p>${data.advantage}</p>
+                    </div>
+                </div>
+            `;
+            
+            modalOverlay.classList.add('active');
+            lucide.createIcons();
+        }
+
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModalAction();
+        });
+
+        closeModal.addEventListener('click', closeModalAction);
+
+        function closeModalAction() {
+            modalOverlay.classList.remove('active');
+        }
+
+        // Add click listeners to cards
+        document.querySelectorAll('.product-card').forEach(card => {
+            const title = card.querySelector('.product-title').innerText;
+            card.addEventListener('click', () => openProductDetails(title));
+        });
+
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            const currentTheme = body.getAttribute('data-theme');
+            
+            if (currentTheme === 'light') {
+                body.setAttribute('data-theme', 'dark');
+                icon.setAttribute('data-lucide', 'sun');
+            } else {
+                body.setAttribute('data-theme', 'light');
+                icon.setAttribute('data-lucide', 'moon');
+            }
+            lucide.createIcons();
+        }
+
+        // Scroll Reveal Animation logic
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 100);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Hover Micro-interactions
+        document.querySelectorAll('.product-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                const icon = card.querySelector('.icon-wrapper');
+                icon.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                icon.style.transform = 'scale(1.1) rotate(-8deg)';
+            });
+            card.addEventListener('mouseleave', () => {
+                const icon = card.querySelector('.icon-wrapper');
+                icon.style.transform = 'scale(1) rotate(0deg)';
+            });
+        });
+    </script>
+</body>
+</html>
